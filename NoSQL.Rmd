@@ -1,0 +1,112 @@
+---
+title: "NoSQL"
+author: "Yadu"
+date: "April 11, 2016"
+output: html_document
+---
+
+First, we load the required packages.
+
+```{r}
+library(RNeo4j)
+library(visNetwork)
+```
+
+Next, we establish the connection to Neo4j and clear the previously existing data.
+
+```{r}
+graph = startGraph("http://localhost:7474/db/data/", username = "neo4j", password = "cometha271")
+clear(graph, input = F)
+```
+
+Now, we create all of the appropriate nodes with the apporpriate labels.
+
+```{r}
+danny = createNode(graph, "Person", name = "Danny DeVito")
+rhea = createNode(graph, "Person", name = "Rhea Perlman")
+swank = createNode(graph, "Person", name = "Hillary Swank")
+dempsey = createNode(graph, "Person", name = "Patrick Dempsey")
+pam = createNode(graph, "Person", name = "Pam Ferris")
+wisdom = createNode(graph, "Person", name = "Robert Wisdom")
+ferrell = createNode(graph, "Person", name = "Will Ferrell")
+black = createNode(graph, "Person", name = "Jack Black")
+staunton = createNode(graph, "Person", name = "Imelda Staunton")
+radcliffe = createNode(graph, "Person", name = "Daniel Radcliffe")
+
+matilda = createNode(graph, "Movie", name = "Matilda")
+freedom = createNode(graph, "Movie", name = "Freedom Writers")
+beethoven = createNode(graph, "Movie", name = "Beethoven's Big Break")
+harry1 = createNode(graph, "Movie", name = "Harry Potter and the Prisoner of Azkaban")
+harry2 = createNode(graph, "Movie", name = "Harry Potter and the Order of the Phoenix")
+harry3 = createNode(graph, "Movie", name = "Harry Potter and the Deathly Hallows")
+cuckoo = createNode(graph, "Movie", name = "One Flew Over the Cuckoo's Nest")
+anchor = createNode(graph, "Movie", name = "Anchorman")
+oldschool = createNode(graph, "Movie", name = "Old School")
+gulliver = createNode(graph, "Movie", name = "Gulliver's Travels")
+lorax = createNode(graph, "Movie", name = "The Lorax")
+panda = createNode(graph, "Movie", name = "Kung-Fu Panda")
+paddington = createNode(graph, "Movie", name = "Paddington")
+mars = createNode(graph, "Movie", name = "Mars Attacks!")
+```
+
+Now, we create the appropriate relations.
+
+```{r}
+createRel(danny, "DIRECTED", matilda)
+createRel(danny, "ACTED_IN", matilda)
+createRel(danny, "DIRECTED", freedom)
+createRel(danny, "ACTED_IN", cuckoo)
+createRel(rhea, "ACTED_IN", matilda)
+createRel(rhea, "ACTED_IN", beethoven)
+createRel(swank, "ACTED_IN", freedom)
+createRel(dempsey, "ACTED_IN", freedom)
+createRel(pam, "ACTED_IN", matilda)
+createRel(pam, "ACTED_IN", harry1)
+createRel(wisdom, "ACTED_IN", freedom)
+createRel(ferrell, "ACTED_IN", anchor)
+createRel(ferrell, "ACTED_IN", oldschool)
+createRel(black, "ACTED_IN", anchor)
+createRel(black, "ACTED_IN", gulliver)
+createRel(black, "STARRED_IN", panda)
+createRel(danny, "STARRED_IN", lorax)
+createRel(staunton, "ACTED_IN", freedom)
+createRel(staunton, "ACTED_IN", harry2)
+createRel(staunton, "ACTED_IN", harry3)
+createRel(radcliffe, "ACTED_IN", harry1)
+createRel(radcliffe, "ACTED_IN", harry2)
+createRel(radcliffe, "ACTED_IN", harry3)
+createRel(staunton, "STARRED_IN", paddington)
+createRel(black, "ACTED_IN", mars)
+createRel(danny, "ACTED_IN", mars)
+
+createRel(danny, "MARRIED", rhea)
+```
+
+Now we create the following node and edge queries and cypher them. 
+
+```{r}
+node_query = "
+MATCH n
+RETURN n.name AS id,
+n.name AS label,
+LABELS(n)[0] AS group
+"
+
+edge_query = "
+MATCH (n) - [r] -> (m)
+RETURN n.name AS from,
+m.name AS to,
+TYPE(r) AS label
+"
+
+nodes = cypher(graph, node_query)
+edges = cypher(graph, edge_query)
+```
+
+Finally we can visualize the entire network. 
+
+```{r}
+visNetwork(nodes,edges)
+```
+
+One advantage of storing the data in Neo4j is that we would be able to extract information in a quicker way and see relationships between the people and the different movies listed. We would also be able to visualize it in a network as shown above. 
