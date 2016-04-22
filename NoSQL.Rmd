@@ -103,6 +103,11 @@ nodes = cypher(graph, node_query)
 edges = cypher(graph, edge_query)
 ```
 
+```{r}
+nodes
+edges
+```
+
 Finally we can visualize the entire network. 
 
 ```{r}
